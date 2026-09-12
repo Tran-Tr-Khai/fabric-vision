@@ -80,6 +80,18 @@ select {
   letter-spacing: -0.5px;
   border-bottom: 1px solid #1c293d;
 }
+.brand-name {
+  color: inherit;
+  text-decoration: none;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.brand .sidebar-toggle {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
 .brand-icon {
   height: 36px;
   width: 36px;
@@ -107,8 +119,8 @@ select {
   font-weight: 600;
   margin: 28px 0 12px;
 }
-nav {
-  padding: 0 12px;
+.sidebar nav {
+  padding: 8px 12px 0;
 }
 .nav-item {
   width: 100%;
@@ -185,6 +197,23 @@ nav {
   align-items: center;
   gap: 10px;
 }
+.sidebar-toggle {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--fv-secondary);
+}
+.sidebar-toggle svg {
+  width: 16px;
+  height: 16px;
+}
+.top-header > .header-right:only-child {
+  margin-left: auto;
+}
 .language-toggle {
   min-width: 34px;
   font-size: 11px;
@@ -217,7 +246,7 @@ nav {
   justify-content: space-between;
   gap: 20px;
   position: relative;
-  margin-bottom: 27px;
+  margin-bottom: 12px;
 }
 .eyebrow {
   display: flex;
@@ -311,6 +340,40 @@ h1 {
   color: #adbed4;
   font-weight: 400;
 }
+
+/* Dashboard context is intentionally compact: operational metadata, no duplicate page title. */
+.station-context {
+  display: flex;
+  align-items: center;
+  min-height: 26px;
+  container-type: inline-size;
+}
+.station-context .station-meta {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  opacity: 1;
+}
+.station-context .station-meta > span {
+  gap: 7px;
+  padding: 0 16px;
+}
+.station-context .station-meta svg {
+  width: 14px;
+  height: 14px;
+}
+.station-context .station-meta b {
+  font-size: 14px;
+  font-weight: 650;
+}
+.theme-light .station-context .station-meta b {
+  color: #302923;
+}
+.theme-dark .station-context .station-meta b {
+  color: #f2dbc2;
+}
 .shift-time {
   color: #667991;
 }
@@ -325,6 +388,12 @@ h1 {
   grid-template-columns: minmax(0, 1fr) 274px;
   gap: 20px;
   align-items: start;
+}
+@media (min-width: 901px) {
+  /* Start controls alongside the first camera card, rather than its section label. */
+  .capture-layout > .station-panel {
+    margin-top: 48px;
+  }
 }
 .capture-workspace {
   min-width: 0;
@@ -462,9 +531,44 @@ h2 {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.12);
-  filter: saturate(0.22) brightness(0.85);
+  transform: none;
+  filter: none;
 }
+.camera-no-image {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  color: #a5b7d0;
+  font-size: 12px;
+}
+.camera-device-manager { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--fv-border); }
+.settings-section-body > .camera-device-manager { margin-top: 0; padding-top: 0; border-top: 0; }
+.settings-section-body > .camera-device-manager + .form-grid { margin-top: 24px; }
+.camera-device-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.settings-section-body > .camera-device-manager .camera-device-toolbar { justify-content: flex-end; }
+.camera-device-toolbar h3 { margin: 0 0 3px; font-size: 14px; }
+.camera-device-toolbar p,
+.camera-device-message { margin: 0; color: var(--fv-secondary); font-size: 12px; }
+.usb-scan-list { display: grid; margin-top: 12px; border: 1px solid var(--fv-border); border-radius: 8px; overflow: hidden; background: var(--fv-surface); }
+.configured-camera-list { display: grid; gap: 8px; margin-top: 12px; }
+.usb-device-item,
+.configured-camera-row { display: flex; align-items: center; gap: 14px; padding: 10px 12px; border: 1px solid var(--fv-border); border-radius: 7px; }
+.usb-device-item { width: 100%; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.usb-scan-list .usb-device-item { border: 0; border-radius: 0; border-bottom: 1px solid var(--fv-border); }
+.usb-scan-list .usb-device-item:last-child { border-bottom: 0; }
+.usb-device-item:hover:not(:disabled) { border-color: var(--fv-accent); background: color-mix(in srgb, var(--fv-accent) 8%, transparent); }
+.usb-device-item:disabled { cursor: default; opacity: .75; }
+.usb-device-item > div,
+.camera-device-identity { display: grid; align-content: start; gap: 2px; min-width: 0; text-align: left; }
+.usb-device-item span,
+.camera-device-identity span { color: var(--fv-secondary); font-size: 13px; font-weight: 400; }
+.camera-device-identity b { color: var(--fv-text); font-size: 15px; font-weight: 650; }
+.usb-device-item .badge,
+.usb-device-select-hint { margin-left: auto; color: var(--fv-secondary); font-size: 12px; }
+.configured-camera-row label { display: grid; align-content: start; gap: 7px; min-width: 220px; margin-left: auto; color: var(--fv-secondary); font-size: 13px; font-weight: 400; text-align: left; }
+.configured-camera-row select { min-height: 38px; padding: 8px 10px; border: 1px solid var(--fv-border); border-radius: 5px; background: var(--fv-card); color: var(--fv-text); font: inherit; font-size: 13px; }
+.camera-device-message { margin-top: 10px; }
+.camera-quality-summary { min-height: 38px; }
 .fabric-1 img {
   transform: scale(1.3);
   filter: saturate(0.12) brightness(0.96);
@@ -689,7 +793,7 @@ i {
 }
 .capture-mode label > span > span {
   display: block;
-  font-size: 9px;
+  font-size: 11px;
   color: #5e7593;
   margin-top: 3px;
 }
@@ -803,7 +907,6 @@ i {
   border-radius: 4px;
   background: #101d2f;
   color: #a5b7d0;
-  font-size: 9px;
   padding: 7px;
 }
 .table-scroll {
@@ -1413,9 +1516,6 @@ dd {
   .station-meta > span {
     padding: 0 8px;
   }
-  .station-meta > span:last-child {
-    display: none;
-  }
   .camera-heading {
     padding-inline: 8px;
   }
@@ -1528,12 +1628,43 @@ dd {
   .recent-captures .section-heading {
     flex-wrap: wrap;
   }
-  .station-meta > span {
-    margin: 4px 0;
+  .station-context .station-meta {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .station-context .station-meta > span {
+    padding: 0 8px;
+    margin: 0;
+  }
+  .station-panel > .capture-controls {
+    grid-column: 1 / -1;
   }
   td,
   th {
     padding-right: 15px;
+  }
+}
+
+@container (max-width: 700px) {
+  .station-context .station-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    column-gap: 0;
+    row-gap: 8px;
+  }
+  .station-context .station-meta > span {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .station-context .station-meta > span:nth-child(odd) {
+    padding-left: 0;
+    border-right: 1px solid #253147;
+  }
+  .station-context .station-meta > span:nth-child(even) {
+    border-right: 0;
   }
 }
 @media (max-width: 500px) {
@@ -1633,7 +1764,6 @@ dd {
     margin-bottom: 9px;
   }
   .capture-mode label > span > span {
-    font-size: 9px;
     margin-top: 0;
   }
   .health-list button {
@@ -2362,14 +2492,6 @@ td,
 .camera-section .grid-toggle {
   border-color: var(--fv-border);
 }
-.theme-dark .camera-section {
-  background: #0d1725;
-  border-color: #1b2b40;
-}
-.theme-light .camera-section {
-  background: #edf2f6;
-  border-color: #dbe4ec;
-}
 .station-header h1 {
   font-size: 27px;
   font-weight: 650;
@@ -2398,16 +2520,13 @@ td,
 }
 
 /* Radical simplicity: remove chrome that does not help normal operation. */
-.camera-section,
-.theme-dark .camera-section,
-.theme-light .camera-section {
+.camera-section {
   padding: 0;
   background: transparent;
   border: 0;
   border-radius: 0;
 }
-.camera-section .section-heading,
-.theme-light .camera-section .section-heading {
+.camera-section .section-heading {
   min-height: 38px;
   margin-bottom: 10px;
   padding: 0;
@@ -2422,9 +2541,7 @@ td,
 .health-summary {
   margin-left: auto;
 }
-.camera-card,
-.theme-dark .camera-card,
-.theme-light .camera-card {
+.camera-card {
   border-radius: 6px;
   box-shadow: none;
 }
@@ -2490,9 +2607,7 @@ td,
 .field-label {
   margin-bottom: 14px;
 }
-.field-label select,
-.theme-dark .field-label select,
-.theme-light .field-label select {
+.field-label select {
   min-height: 38px;
   background: transparent;
 }
@@ -2531,8 +2646,7 @@ td,
   background: transparent;
   border-color: currentColor;
 }
-.theme-dark .panel,
-.theme-light .panel {
+.panel {
   box-shadow: none;
 }
 
@@ -2685,4 +2799,220 @@ h2,
 }
 .dialog-content {
   border-radius: 14px;
+}
+
+/* Shared geometry: the active camera workspace sits closer to the app header in every theme. */
+.main-content.capture-page {
+  padding-top: 60px;
+}
+
+/* Camera heading leads the workspace; operating context follows as a compact second row. */
+.camera-context-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 26px;
+  margin: 0 0 6px;
+}
+.camera-context-row .station-context {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.camera-context-row .station-context .station-meta {
+  min-width: 0;
+}
+.camera-context-row .capture-controls {
+  flex: 0 0 auto;
+}
+.camera-section .section-heading {
+  position: absolute;
+  inset: -40px 0 auto;
+  min-height: 22px;
+  height: 22px;
+  margin: 0;
+  pointer-events: none;
+}
+.camera-section .section-heading h2 {
+  font-size: 18px;
+  line-height: 1;
+}
+.camera-section {
+  position: relative;
+}
+
+/* Dashboard geometry is theme-neutral. Theme files only choose colour treatment. */
+.grid-toggle {
+  gap: 7px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+.grid-toggle button { width: 26px; }
+.camera-card { position: relative; }
+.camera-heading,
+.camera-footer {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  background: transparent;
+}
+.camera-heading { top: 0; padding: 11px 12px; }
+.camera-footer { bottom: 0; padding: 10px 12px; }
+.camera-name,
+.camera-fps,
+.camera-footer > span {
+  font-weight: 600;
+  text-shadow: 0 1px 2px #000000b3;
+}
+.camera-fps { font-size: 11px; }
+.camera-footer > span { font-size: 12px; }
+.preview-button .fabric-preview { height: auto; aspect-ratio: 1.72; }
+.camera-indicator,
+.health-list .status-dot { width: 10px; height: 10px; box-shadow: none; }
+.camera-health { margin-top: 12px; }
+.health-list { padding: 4px 15px 6px; }
+.health-list button { height: 27px; }
+.camera-total {
+  font-size: 12px;
+}
+.station-panel > .capture-controls {
+  justify-content: flex-end;
+  position: absolute;
+  inset: -50px 0 auto 0;
+  margin: 0;
+}
+.station-panel {
+  position: relative;
+}
+
+/* Collapsed navigation retains the application actions while freeing the workspace. */
+.app-shell.sidebar-collapsed .sidebar {
+  width: 56px;
+}
+.app-shell.sidebar-collapsed .app-main {
+  margin-left: 56px;
+}
+.sidebar.collapsed .brand {
+  display: flex;
+  justify-content: center;
+  padding: 0;
+}
+.sidebar.collapsed .brand-name { display: none; }
+.sidebar.collapsed .brand .sidebar-toggle { margin-left: 0; }
+.sidebar.collapsed nav {
+  padding: 8px 7px;
+}
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  height: 42px;
+  padding: 0;
+}
+.sidebar.collapsed .nav-label-text,
+.sidebar.collapsed .nav-count {
+  display: none;
+}
+
+/* Compact application chrome: retain usable controls without a large empty header band. */
+.brand,
+.top-header {
+  height: 42px;
+}
+.brand {
+  padding-inline: 14px;
+  font-size: 16px;
+}
+.top-header {
+  padding-inline: 20px;
+}
+
+/* The compact Dashboard summary follows the same 20px working rhythm as its content blocks. */
+.station-context .station-meta > span:first-child {
+  padding-left: 0;
+}
+@media (min-width: 1151px) {
+  .page-top {
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .capture-controls {
+    padding-top: 0;
+  }
+  .capture-layout > .station-panel {
+    margin-top: 32px;
+  }
+}
+@media (max-width: 1150px) {
+.camera-context-row {
+    flex-wrap: wrap;
+  }
+  .capture-layout > .station-panel {
+    margin-top: 0;
+  }
+  .station-panel > .capture-controls {
+    position: static;
+    margin-bottom: 10px;
+  }
+}
+
+/* Keep the right panel aligned with the first camera while the workspace is still two columns. */
+@media (min-width: 801px) and (max-width: 1150px) {
+  .camera-context-row {
+    flex-wrap: nowrap;
+  }
+  .capture-layout > .station-panel {
+    margin-top: 32px;
+  }
+  .station-panel > .capture-controls {
+    position: absolute;
+    inset: -50px 0 auto 0;
+    margin: 0;
+  }
+}
+
+/* Compact desktop: navigation becomes an icon rail before labels can overflow. */
+@media (max-width: 980px) {
+  .sidebar {
+    width: 56px;
+  }
+  .app-main {
+    margin-left: 56px;
+  }
+  .sidebar .brand {
+    justify-content: center;
+    padding: 0;
+  }
+  .sidebar .brand-name,
+  .sidebar .nav-label-text,
+  .sidebar .nav-count {
+    display: none;
+  }
+  .sidebar .brand .sidebar-toggle {
+    margin-left: 0;
+  }
+  .sidebar nav {
+    padding: 8px 7px;
+  }
+  .sidebar .nav-item {
+    justify-content: center;
+    height: 42px;
+    padding: 0;
+  }
+}
+
+/* Keep collection actions inside the narrow right column. */
+@media (min-width: 801px) and (max-width: 1350px) {
+  .station-panel > .capture-controls {
+    gap: 4px;
+  }
+  .station-panel > .capture-controls button {
+    height: 34px;
+    padding-inline: 8px;
+    font-size: 11px;
+  }
+  .station-panel > .capture-controls button:last-child {
+    width: 34px;
+    padding-inline: 0;
+  }
 }

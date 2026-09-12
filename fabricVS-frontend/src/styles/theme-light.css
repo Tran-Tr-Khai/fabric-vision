@@ -5,8 +5,8 @@
   --fv-card: #fffdfb;
   --fv-card-hover: #faebe4;
   --fv-border: #d9cfca;
-  --fv-blue: #a85c43;
-  --fv-blue-hover: #914a34;
+  --fv-blue: #c48169;
+  --fv-blue-hover: #914a34ea;
   --fv-text: #2f2a28;
   --fv-secondary: #6f625c;
   --fv-muted: #9a8e89;
@@ -310,6 +310,20 @@
   color: #403632;
   font-weight: 550;
 }
+.theme-light .configured-camera-row select {
+  color-scheme: light;
+  background: #fffdfb;
+  border-color: var(--fv-border);
+  color: #403632;
+  font-weight: 550;
+}
+.theme-light .configured-camera-row select option {
+  background: #fffdfb;
+  color: #403632;
+}
+.theme-light .configured-camera-row label { color: #615650; font-size: 13px; font-weight: 600; }
+.theme-light .camera-device-identity b { color: #302925; font-size: 15px; }
+.theme-light .camera-device-identity span { color: #746861; font-size: 13px; }
 .theme-light .badge.green {
   color: #1f7559;
 }
@@ -664,6 +678,3 @@
   height: auto;
   aspect-ratio: 1.72;
 }
-
-
-

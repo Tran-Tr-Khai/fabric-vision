@@ -2,32 +2,49 @@ import { useState } from 'react'
 import { Camera, Factory, Save, SlidersHorizontal, Timer } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { CaptureSettings, Station } from '@/types'
+import { useLanguage } from '@/lib/i18n'
+import { CameraSetup } from '@/components/CameraSetup'
+import type { Camera as CameraRecord } from '@/types'
+
+const qualityPresets = [
+  { id: 'low', label: 'Thấp', resolution: '640x480', fps: 15 },
+  { id: 'standard', label: 'Tiêu chuẩn', resolution: '1280x720', fps: 30 },
+  { id: 'high', label: 'Cao', resolution: '1920x1080', fps: 30 },
+  { id: 'full-hd', label: 'Full HD', resolution: '1920x1080', fps: 60 },
+] as const
 export function SettingsPage({
   settings,
   station,
   collecting,
+  cameras,
+  onCameraConfigured,
   onSave,
 }: {
   settings: CaptureSettings
   station: Station
   collecting: boolean
-  onSave: (settings: CaptureSettings, station: Station) => void
+  cameras: CameraRecord[]
+  onCameraConfigured: () => Promise<void>
+  onSave: (settings: CaptureSettings, station: Station) => void | Promise<void>
 }) {
+  const { t } = useLanguage()
   const [draft, setDraft] = useState(settings)
   const [draftStation, setDraftStation] = useState(station)
+  const currentQuality = qualityPresets.find(
+    (preset) => preset.resolution === draft.resolution.replace(' × ', 'x') && preset.fps === draft.fps,
+  )?.id ?? 'custom'
   return (
     <>
       <div className="secondary-page-heading">
         <div>
-          <h1>Cài đặt hệ thống</h1>
-          <p>Cấu hình trạm và thông số thu thập hình ảnh.</p>
+          <h1>{t('Cài đặt hệ thống')}</h1>
+          <p>{t('Cấu hình trạm và thông số thu thập hình ảnh.')}</p>
         </div>
-        <span className="badge">Cấu hình mô phỏng</span>
       </div>
       <form
-        onSubmit={(event) => {
+        onSubmit={async (event) => {
           event.preventDefault()
-          onSave(draft, draftStation)
+          await onSave(draft, draftStation)
         }}
       >
         <fieldset disabled={collecting}>
@@ -35,56 +52,28 @@ export function SettingsPage({
             <section className="settings-section">
               <div className="settings-section-heading">
                 <Camera size={17} />
-                <h2>Cấu hình camera</h2>
+                <h2>{t('Cấu hình camera')}</h2>
               </div>
               <div className="settings-section-body">
-                <p className="settings-description">Áp dụng đồng bộ cho tất cả camera của trạm.</p>
+                <CameraSetup machineId={station.id} cameras={cameras} onComplete={onCameraConfigured} />
                 <div className="form-grid">
                   <label className="field-label">
-                    Độ phân giải
+                    {t('Chất lượng hình ảnh')}
                     <select
-                      value={draft.resolution}
-                      onChange={(e) => setDraft({ ...draft, resolution: e.target.value })}
+                      value={currentQuality}
+                      onChange={(e) => {
+                        const preset = qualityPresets.find((item) => item.id === e.target.value)
+                        if (preset) setDraft({ ...draft, resolution: preset.resolution, fps: preset.fps })
+                      }}
                     >
-                      <option>1920 × 1080</option>
-                      <option>2560 × 1440</option>
-                      <option>3840 × 2160</option>
+                      {qualityPresets.map((preset) => <option key={preset.id} value={preset.id}>{t(preset.label)}</option>)}
                     </select>
                   </label>
                   <label className="field-label">
-                    FPS
-                    <select
-                      value={draft.fps}
-                      onChange={(e) => setDraft({ ...draft, fps: Number(e.target.value) })}
-                    >
-                      <option value={15}>15 FPS</option>
-                      <option value={30}>30 FPS</option>
-                      <option value={60}>60 FPS</option>
-                    </select>
-                  </label>
-                  <label className="field-label">
-                    Exposure (ms)
-                    <input
-                      type="number"
-                      min="0.1"
-                      max="100"
-                      step="0.1"
-                      required
-                      value={draft.exposure}
-                      onChange={(e) => setDraft({ ...draft, exposure: Number(e.target.value) })}
-                    />
-                  </label>
-                  <label className="field-label">
-                    Gain (dB)
-                    <input
-                      type="number"
-                      min="0"
-                      max="24"
-                      step="0.1"
-                      required
-                      value={draft.gain}
-                      onChange={(e) => setDraft({ ...draft, gain: Number(e.target.value) })}
-                    />
+                    {t('Thông số hiện tại')}
+                    <div className="read-field camera-quality-summary">
+                      {draft.resolution.replace('x', ' × ')} · {draft.fps} FPS
+                    </div>
                   </label>
                 </div>
               </div>
@@ -92,16 +81,16 @@ export function SettingsPage({
             <section className="settings-section">
               <div className="settings-section-heading">
                 <Factory size={17} />
-                <h2>Cấu hình trạm</h2>
+                <h2>{t('Cấu hình trạm')}</h2>
               </div>
               <div className="settings-section-body">
                 <p className="settings-description">
-                  Trạm {station.id} · Thông tin của phiên làm việc.
+                  {t('Máy')} {station.machine || station.id} · {t('Thông tin cho lần thu thập tiếp theo.')}
                 </p>
                 <div className="form-grid">
                   {(
                     [
-                      { key: 'name', label: 'Tên trạm' },
+                      { key: 'name', label: 'Tên máy' },
                       { key: 'machine', label: 'Máy sản xuất' },
                       { key: 'fabric', label: 'Loại vải' },
                       { key: 'roll', label: 'Mã cuộn' },
@@ -109,7 +98,7 @@ export function SettingsPage({
                     ] as const
                   ).map((field) => (
                     <label key={field.key} className="field-label">
-                      {field.label}
+                      {t(field.label)}
                       <input
                         required
                         maxLength={70}
@@ -126,12 +115,12 @@ export function SettingsPage({
             <section className="settings-section">
               <div className="settings-section-heading">
                 <Timer size={17} />
-                <h2>Cấu hình thu thập</h2>
+                <h2>{t('Cấu hình thu thập')}</h2>
               </div>
               <div className="settings-section-body">
                 <div className="form-grid">
                   <label className="field-label">
-                    Khoảng thời gian
+                    {t('Khoảng thời gian')}
                     <select
                       value={draft.interval}
                       onChange={(e) => setDraft({ ...draft, interval: Number(e.target.value) })}
@@ -144,7 +133,7 @@ export function SettingsPage({
                     </select>
                   </label>
                   <label className="field-label">
-                    Định dạng ảnh
+                    {t('Định dạng ảnh')}
                     <select
                       value={draft.format}
                       onChange={(e) =>
@@ -158,15 +147,15 @@ export function SettingsPage({
                 </div>
                 <p className="settings-description mb-0">
                   <SlidersHorizontal size={13} />
-                  Thông số áp dụng cho các lần chụp tiếp theo.
+                  {t('Thông số áp dụng cho các lần chụp tiếp theo.')}
                 </p>
               </div>
             </section>
             <div className="settings-actions">
               <span>
                 {collecting
-                  ? 'Dừng thu thập trước khi thay đổi cấu hình.'
-                  : 'Các thay đổi chỉ được lưu trong phiên làm việc hiện tại.'}
+                  ? t('Dừng thu thập trước khi thay đổi cấu hình.')
+                  : t('Các thay đổi chỉ được lưu trong phiên làm việc hiện tại.')}
               </span>
               <Button
                 type="button"
@@ -176,11 +165,11 @@ export function SettingsPage({
                   setDraftStation(station)
                 }}
               >
-                Hủy thay đổi
+                {t('Hủy thay đổi')}
               </Button>
               <Button type="submit">
                 <Save />
-                Lưu cấu hình
+                {t('Lưu cấu hình')}
               </Button>
             </div>
           </section>

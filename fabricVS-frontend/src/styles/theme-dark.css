@@ -239,6 +239,19 @@
   border-color: #4b575e;
   color: #f2dbc2;
 }
+.theme-dark .configured-camera-row select {
+  color-scheme: dark;
+  background: #20282e;
+  border-color: #4b575e;
+  color: #f2dbc2;
+}
+.theme-dark .configured-camera-row select option {
+  background: #20282e;
+  color: #f2dbc2;
+}
+.theme-dark .configured-camera-row label { color: #b9b0a7; font-size: 13px; font-weight: 600; }
+.theme-dark .camera-device-identity b { color: #f2dbc2; font-size: 15px; }
+.theme-dark .camera-device-identity span { color: #b9b0a7; font-size: 13px; }
 .theme-dark .dataset-filters,
 .theme-dark .label-filter,
 .theme-dark .label-navigation,
@@ -322,44 +335,20 @@
 
 /* Polish pass: the live camera grid leads, surrounding surfaces recede. */
 .theme-dark .camera-card {
-  position: relative;
   background: #242d33;
   border-color: #3c474d;
-}
-.theme-dark .camera-heading,
-.theme-dark .camera-footer {
-  position: absolute;
-  z-index: 2;
-  left: 0;
-  right: 0;
-  background: transparent;
-}
-.theme-dark .camera-heading {
-  top: 0;
-  padding: 11px 12px;
-}
-.theme-dark .camera-footer {
-  bottom: 0;
-  padding: 10px 12px;
 }
 .theme-dark .camera-name,
 .theme-dark .camera-fps,
 .theme-dark .camera-footer > span {
   color: #eadbd0;
-  font-weight: 600;
   text-shadow: 0 1px 2px #000000b3;
 }
 .theme-dark .camera-fps {
   color: #c5bbb1;
-  font-size: 11px;
 }
 .theme-dark .camera-footer > span {
   color: #d6c9bd;
-  font-size: 12px;
-}
-.theme-dark .preview-button .fabric-preview {
-  height: auto;
-  aspect-ratio: 1.72;
 }
 .theme-dark .panel,
 .theme-dark .station-panel .panel,
@@ -374,11 +363,9 @@
   border-color: #3c474d;
 }
 .theme-dark .recent-captures td {
-  height: 52px;
   border-color: #3a454b;
 }
 .theme-dark .recent-captures th {
-  height: 34px;
   color: #c8bbae;
 }
 .theme-dark .capture-insight,
@@ -387,14 +374,7 @@
 .theme-dark .camera-coverage span {
   color: #a9a39d;
 }
-.theme-dark .camera-health {
-  margin-top: 12px;
-}
-.theme-dark .health-list {
-  padding: 4px 15px 6px;
-}
 .theme-dark .health-list button {
-  height: 27px;
   border-color: #39434a;
 }
 .theme-dark .health-list b {
@@ -405,7 +385,6 @@
 }
 .theme-dark .health-summary {
   color: #d8c3b0;
-  font-weight: 600;
 }
 
 /* Dataset and labeling use the charcoal/clay system rather than legacy navy. */

@@ -1,4 +1,4 @@
-export type Page = 'dashboard' | 'capture' | 'dataset' | 'labeling' | 'settings'
+export type Page = 'capture' | 'dataset' | 'labeling' | 'settings'
 
 export type ImageLabel = 'normal' | 'defect' | 'suspected' | 'unclear'
 export type DefectType =
@@ -24,6 +24,7 @@ export interface Station {
 export interface Camera {
   id: string
   stationId: string
+  deviceIndex?: number
   name: string
   position: string
   resolution: string
