@@ -2940,6 +2940,46 @@ h2,
   }
 }
 
+/* Dataset filters keep every control readable instead of shrinking text at
+   narrower desktop widths. */
+.dataset-filters {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) repeat(4, minmax(150px, 170px)) max-content;
+}
+.dataset-filters > input,
+.dataset-filters > select {
+  width: 100%;
+  min-width: 0;
+}
+.dataset-filters .search-field {
+  min-width: 0;
+}
+.dataset-filters > button {
+  justify-self: start;
+  white-space: nowrap;
+}
+@media (max-width: 1320px) {
+  .dataset-filters {
+    grid-template-columns: minmax(260px, 1fr) repeat(3, minmax(150px, 1fr));
+  }
+}
+@media (max-width: 920px) {
+  .dataset-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .dataset-filters .search-field {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 620px) {
+  .dataset-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dataset-filters .search-field {
+    grid-column: auto;
+  }
+}
+
 /* The compact Dashboard summary follows the same 20px working rhythm as its content blocks. */
 .station-context .station-meta > span:first-child {
   padding-left: 0;
