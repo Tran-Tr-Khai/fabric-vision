@@ -5,6 +5,7 @@ import { Dialog } from '@/components/ui/dialog'
 import { FabricPreview } from '@/components/CameraCard'
 import { date, time } from '@/lib/utils'
 import type { Camera, CapturedImage, CaptureEvent, Station } from '@/types'
+import { useLanguage } from '@/lib/i18n'
 export function DatasetPage({
   images,
   events,
@@ -20,6 +21,7 @@ export function DatasetPage({
   onBack: () => void
   onEvent: (event: CaptureEvent) => void
 }) {
+  const { t } = useLanguage()
   const [search, setSearch] = useState('')
   const [cameraId, setCameraId] = useState('all')
   const [stationId, setStationId] = useState('all')
@@ -48,50 +50,50 @@ export function DatasetPage({
     <>
       <div className="secondary-page-heading">
         <div>
-          <h1>Kho dữ liệu hình ảnh</h1>
-          <p>Duyệt hình ảnh và metadata từ các lần thu thập.</p>
+          <h1>{t('Kho dữ liệu hình ảnh')}</h1>
+          <p>{t('Duyệt hình ảnh và metadata từ các lần thu thập.')}</p>
         </div>
         <Button variant="outline" onClick={onBack}>
           <ArrowLeft />
-          Về thu thập
+          {t('Về thu thập')}
         </Button>
       </div>
       <div className="dataset-filters">
         <label className="search-field">
           <Search size={15} />
           <input
-            placeholder="Tìm mã ảnh hoặc sự kiện…"
-            aria-label="Tìm ảnh"
+            placeholder={t('Tìm mã ảnh hoặc sự kiện…')}
+            aria-label={t('Tìm ảnh')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </label>
         <input
           type="date"
-          aria-label="Lọc ngày chụp"
+          aria-label={t('Lọc ngày chụp')}
           value={day}
           onChange={(e) => setDay(e.target.value)}
         />
         <select
-          aria-label="Lọc trạm"
+          aria-label={t('Lọc trạm')}
           value={stationId}
           onChange={(e) => setStationId(e.target.value)}
         >
-          <option value="all">Tất cả trạm</option>
+          <option value="all">{t('Tất cả trạm')}</option>
           <option>{station.id}</option>
         </select>
         <select
-          aria-label="Lọc camera"
+          aria-label={t('Lọc camera')}
           value={cameraId}
           onChange={(e) => setCameraId(e.target.value)}
         >
-          <option value="all">Tất cả camera</option>
+          <option value="all">{t('Tất cả camera')}</option>
           {cameras.map((camera) => (
             <option key={camera.id}>{camera.id}</option>
           ))}
         </select>
-        <select aria-label="Lọc máy" value={machine} onChange={(e) => setMachine(e.target.value)}>
-          <option value="all">Tất cả máy</option>
+        <select aria-label={t('Lọc máy')} value={machine} onChange={(e) => setMachine(e.target.value)}>
+          <option value="all">{t('Tất cả máy')}</option>
           {machines.map((name) => (
             <option key={name}>{name}</option>
           ))}
@@ -107,20 +109,20 @@ export function DatasetPage({
             setMachine('all')
           }}
         >
-          Xóa lọc
+          {t('Xóa lọc')}
         </Button>
       </div>
       <div className="section-heading">
         <div>
           <Database size={17} />
           <h2>{filtered.length} hình ảnh</h2>
-          <span className="dataset-summary">/ {events.length} sự kiện trong phiên</span>
+          <span className="dataset-summary">/ {events.length} {t('sự kiện trong phiên')}</span>
         </div>
         <div className="grid-toggle">
           <Button
             variant={view === 'grid' ? 'secondary' : 'ghost'}
             size="icon"
-            aria-label="Lưới ảnh"
+            aria-label={t('Lưới ảnh')}
             aria-pressed={view === 'grid'}
             onClick={() => setView('grid')}
           >
@@ -129,7 +131,7 @@ export function DatasetPage({
           <Button
             variant={view === 'table' ? 'secondary' : 'ghost'}
             size="icon"
-            aria-label="Bảng ảnh"
+            aria-label={t('Bảng ảnh')}
             aria-pressed={view === 'table'}
             onClick={() => setView('table')}
           >
@@ -140,7 +142,7 @@ export function DatasetPage({
       {!filtered.length ? (
         <div className="panel empty-state">
           <ImageIcon className="mx-auto mb-3" />
-          Không tìm thấy ảnh phù hợp. Hãy thay đổi bộ lọc.
+          {t('Không tìm thấy ảnh phù hợp. Hãy thay đổi bộ lọc.')}
         </div>
       ) : view === 'grid' ? (
         <div className="dataset-grid">
@@ -155,7 +157,7 @@ export function DatasetPage({
                     <span>
                       {image.cameraId}
                       <i />
-                      {camera.position}
+                      {t(camera.position)}
                     </span>
                     <small>
                       {date(image.timestamp)} · {time(image.timestamp)}
@@ -171,12 +173,8 @@ export function DatasetPage({
           <table>
             <thead>
               <tr>
-                <th>Ảnh</th>
-                <th>Sự kiện</th>
-                <th>Camera</th>
-                <th>Thời gian</th>
-                <th>Kích thước</th>
-                <th>Dung lượng</th>
+                <th>{t('Ảnh')}</th><th>{t('Sự kiện')}</th><th>{t('Camera')}</th>
+                <th>{t('Thời gian')}</th><th>{t('Kích thước')}</th><th>{t('Dung lượng')}</th>
               </tr>
             </thead>
             <tbody>
@@ -205,7 +203,7 @@ export function DatasetPage({
       {filtered.length > limit && (
         <div className="flex justify-center p-6">
           <Button variant="outline" onClick={() => setLimit((previous) => previous + 24)}>
-            Xem thêm {Math.min(24, filtered.length - limit)} ảnh
+            {t('Xem thêm')} {Math.min(24, filtered.length - limit)} {t('Ảnh').toLowerCase()}
           </Button>
         </div>
       )}
@@ -213,7 +211,7 @@ export function DatasetPage({
         open={selected !== null}
         onOpenChange={(open) => !open && setSelected(null)}
         title={selected?.id ?? 'Chi tiết ảnh'}
-        description="Ảnh thu thập · Metadata"
+        description={t('Ảnh thu thập · Metadata')}
       >
         <div className="detail-layout">
           {selectedCamera && (
@@ -224,25 +222,25 @@ export function DatasetPage({
             />
           )}
           <div className="detail-info">
-            <h3>Thông tin ảnh</h3>
+            <h3>{t('Thông tin ảnh')}</h3>
             <dl>
-              <dt>Trạm</dt>
+              <dt>{t('Trạm')}</dt>
               <dd>{imageStation.id}</dd>
-              <dt>Máy</dt>
+              <dt>{t('Máy')}</dt>
               <dd>{imageStation.machine}</dd>
-              <dt>Camera</dt>
+              <dt>{t('Camera')}</dt>
               <dd>{selected?.cameraId}</dd>
-              <dt>Vị trí</dt>
-              <dd>{selectedCamera?.position}</dd>
-              <dt>Vải</dt>
+              <dt>{t('Vị trí')}</dt>
+              <dd>{selectedCamera && t(selectedCamera.position)}</dd>
+              <dt>{t('Vải')}</dt>
               <dd>{imageStation.fabric}</dd>
-              <dt>Kích thước</dt>
+              <dt>{t('Kích thước')}</dt>
               <dd>
                 {selected?.width} × {selected?.height}
               </dd>
-              <dt>Dung lượng</dt>
+              <dt>{t('Dung lượng')}</dt>
               <dd>{((selected?.fileSize ?? 0) / 1000000).toFixed(2)} MB</dd>
-              <dt>Thời gian</dt>
+              <dt>{t('Thời gian')}</dt>
               <dd>{selected && time(selected.timestamp)}</dd>
             </dl>
             <Button
@@ -255,7 +253,7 @@ export function DatasetPage({
                 }
               }}
             >
-              Xem sự kiện chứa ảnh
+              {t('Xem sự kiện chứa ảnh')}
             </Button>
           </div>
         </div>

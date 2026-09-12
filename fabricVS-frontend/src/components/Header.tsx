@@ -4,11 +4,10 @@ import type { Page } from '@/types'
 import type { Language } from '@/lib/i18n'
 import { useLanguage } from '@/lib/i18n'
 const titles: Record<Page, string> = {
-  dashboard: 'Dashboard',
-  capture: 'Data Collection',
-  dataset: 'Dataset',
+  capture: 'Thu thập dữ liệu',
+  dataset: 'Kho dữ liệu',
   labeling: 'Gắn nhãn',
-  settings: 'Settings',
+  settings: 'Cài đặt',
 }
 export function Header({
   page,
@@ -28,7 +27,7 @@ export function Header({
   const { t } = useLanguage()
   return (
     <header className="top-header">
-      <div className="breadcrumb">{t(titles[page])}</div>
+      {page !== 'capture' && <div className="breadcrumb">{t(titles[page])}</div>}
       <div className="header-right">
         <Button
           variant="ghost"

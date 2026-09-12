@@ -16,6 +16,7 @@ import { FabricPreview } from '@/components/CameraCard'
 import { Button } from '@/components/ui/button'
 import { Dialog } from '@/components/ui/dialog'
 import { cn, date, time } from '@/lib/utils'
+import { useLanguage } from '@/lib/i18n'
 import type {
   Camera,
   CapturedImage,
@@ -26,32 +27,33 @@ import type {
 } from '@/types'
 
 const labels: { value: ImageLabel; label: string; hint: string }[] = [
-  { value: 'normal', label: 'Normal', hint: 'Ảnh đạt yêu cầu' },
-  { value: 'defect', label: 'Defect', hint: 'Có lỗi rõ ràng' },
-  { value: 'suspected', label: 'Suspected Defect', hint: 'Cần kiểm tra thêm' },
-  { value: 'unclear', label: 'Unclear', hint: 'Ảnh không đủ rõ' },
+  { value: 'normal', label: 'Bình thường', hint: 'Ảnh đạt yêu cầu' },
+  { value: 'defect', label: 'Lỗi', hint: 'Có lỗi rõ ràng' },
+  { value: 'suspected', label: 'Nghi ngờ lỗi', hint: 'Cần kiểm tra thêm' },
+  { value: 'unclear', label: 'Không rõ', hint: 'Ảnh không đủ rõ' },
 ]
 
 const defectTypes: { value: DefectType; label: string }[] = [
-  { value: 'hole', label: 'Hole' },
-  { value: 'stain', label: 'Stain' },
-  { value: 'broken-yarn', label: 'Broken yarn' },
-  { value: 'missing-yarn', label: 'Missing yarn' },
-  { value: 'slub', label: 'Slub' },
-  { value: 'wrinkle', label: 'Wrinkle' },
-  { value: 'other', label: 'Other' },
+  { value: 'hole', label: 'Lỗ thủng' },
+  { value: 'stain', label: 'Vết bẩn' },
+  { value: 'broken-yarn', label: 'Đứt sợi' },
+  { value: 'missing-yarn', label: 'Thiếu sợi' },
+  { value: 'slub', label: 'Nút sợi' },
+  { value: 'wrinkle', label: 'Nếp nhăn' },
+  { value: 'other', label: 'Khác' },
 ]
 
 const labelNames: Record<ImageLabel, string> = {
-  normal: 'Normal',
-  defect: 'Defect',
-  suspected: 'Suspected Defect',
-  unclear: 'Unclear',
+  normal: 'Bình thường',
+  defect: 'Lỗi',
+  suspected: 'Nghi ngờ lỗi',
+  unclear: 'Không rõ',
 }
 
 function ReviewBadge({ review }: { review?: ImageReview }) {
-  if (!review?.label) return <span className="review-badge pending">Chờ review</span>
-  return <span className={`review-badge ${review.label}`}>{labelNames[review.label]}</span>
+  const { t } = useLanguage()
+  if (!review?.label) return <span className="review-badge pending">{t('Chờ review')}</span>
+  return <span className={`review-badge ${review.label}`}>{t(labelNames[review.label])}</span>
 }
 
 function LabelDetail({
@@ -73,6 +75,7 @@ function LabelDetail({
   onClose: () => void
   onSave: (review: ImageReview) => void
 }) {
+  const { t } = useLanguage()
   const [label, setLabel] = useState<ImageLabel | undefined>(review?.label)
   const [defectType, setDefectType] = useState<DefectType | undefined>(review?.defectType)
   const [notes, setNotes] = useState(review?.notes ?? '')
@@ -96,7 +99,7 @@ function LabelDetail({
     <Dialog
       open
       onOpenChange={(open) => !open && onClose()}
-      title={`Review ảnh · ${camera.id}`}
+      title={`${t('Review ảnh')} · ${camera.id}`}
       description={`${image.captureEventId} · ${date(image.timestamp)} ${time(image.timestamp)}`}
       className="label-dialog"
     >
@@ -105,7 +108,7 @@ function LabelDetail({
           <FabricPreview camera={camera} imageUrl={image.imageUrl} className="label-large-image" />
           <div className="label-image-caption">
             <span>
-              {camera.name} · {camera.position}
+              {camera.name} · {t(camera.position)}
             </span>
             <span>
               {image.width} × {image.height}
@@ -113,32 +116,32 @@ function LabelDetail({
           </div>
           <div className="label-metadata">
             <span>
-              <b>Capture Event</b>
+              <b>{t('Sự kiện chụp')}</b>
               {event.id}
             </span>
             <span>
-              <b>Station</b>
+              <b>{t('Trạm')}</b>
               {event.stationId}
             </span>
             <span>
-              <b>Camera</b>
+              <b>{t('Camera')}</b>
               {camera.id}
             </span>
             <span>
-              <b>Timestamp</b>
+              <b>{t('Thời điểm')}</b>
               {date(image.timestamp)} {time(image.timestamp)}
             </span>
             <span>
-              <b>Machine</b>
+              <b>{t('Máy')}</b>
               {event.stationSnapshot.machine}
             </span>
             <span>
-              <b>Roll</b>
+              <b>{t('Cuộn')}</b>
               {event.stationSnapshot.roll}
             </span>
             <span>
-              <b>Capture mode</b>
-              {event.triggerType === 'automatic' ? 'Tự động' : 'Thủ công'}
+              <b>{t('Chế độ chụp')}</b>
+              {event.triggerType === 'automatic' ? t('Tự động') : t('Thủ công')}
             </span>
           </div>
         </section>
@@ -147,8 +150,8 @@ function LabelDetail({
           <div className="label-step">
             <span>01</span>
             <div>
-              <b>Quyết định nhãn</b>
-              <small>Chọn đánh giá phù hợp cho ảnh.</small>
+              <b>{t('Quyết định nhãn')}</b>
+              <small>{t('Chọn đánh giá phù hợp cho ảnh.')}</small>
             </div>
           </div>
           <div className="label-options">
@@ -163,8 +166,8 @@ function LabelDetail({
               >
                 <span className="label-radio">{label === item.value && <Check size={13} />}</span>
                 <span>
-                  <b>{item.label}</b>
-                  <small>{item.hint}</small>
+                  <b>{t(item.label)}</b>
+                  <small>{t(item.hint)}</small>
                 </span>
               </button>
             ))}
@@ -175,8 +178,8 @@ function LabelDetail({
               <div className="label-step">
                 <span>02</span>
                 <div>
-                  <b>Loại lỗi</b>
-                  <small>Chọn loại lỗi quan sát được.</small>
+                  <b>{t('Loại lỗi')}</b>
+                  <small>{t('Chọn loại lỗi quan sát được.')}</small>
                 </div>
               </div>
               <div className="defect-options">
@@ -186,7 +189,7 @@ function LabelDetail({
                     className={defectType === item.value ? 'selected' : ''}
                     onClick={() => setDefectType(item.value)}
                   >
-                    {item.label}
+                    {t(item.label)}
                   </button>
                 ))}
               </div>
@@ -194,10 +197,10 @@ function LabelDetail({
           )}
 
           <label className="label-notes">
-            Ghi chú
+            {t('Ghi chú')}
             <textarea
               rows={3}
-              placeholder="Thêm ghi chú cho ảnh này…"
+              placeholder={t('Thêm ghi chú cho ảnh này…')}
               value={notes}
               onChange={(input) => setNotes(input.target.value)}
             />
@@ -205,7 +208,7 @@ function LabelDetail({
           <div className="label-primary-actions">
             <Button variant="outline" disabled={!canSave} onClick={() => persist(false)}>
               <Tags />
-              Lưu nhãn
+              {t('Lưu nhãn')}
             </Button>
             <Button
               disabled={!canSave}
@@ -216,14 +219,14 @@ function LabelDetail({
               }}
             >
               <ShieldCheck />
-              Đánh dấu đã review
+              {t('Đánh dấu đã review')}
             </Button>
           </div>
         </aside>
       </div>
       <div className="label-navigation">
         <span>
-          {currentIndex + 1} / {images.length} ảnh
+            {currentIndex + 1} / {images.length} {t('ảnh')}
         </span>
         <div>
           <Button
@@ -232,14 +235,14 @@ function LabelDetail({
             onClick={() => previous && onSelect(previous)}
           >
             <ArrowLeft />
-            Trước
+            {t('Trước')}
           </Button>
           <Button variant="ghost" disabled={!next} onClick={() => next && onSelect(next)}>
             <SkipForward />
-            Bỏ qua
+            {t('Bỏ qua')}
           </Button>
           <Button variant="outline" disabled={!next} onClick={() => next && onSelect(next)}>
-            Tiếp
+            {t('Tiếp')}
             <ArrowRight />
           </Button>
         </div>
@@ -265,6 +268,7 @@ export function LabelingPage({
   onClearScope: () => void
   onSave: (review: ImageReview) => void
 }) {
+  const { t } = useLanguage()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<'all' | 'pending' | 'reviewed'>('all')
@@ -291,15 +295,15 @@ export function LabelingPage({
     <>
       <div className="secondary-page-heading labeling-heading">
         <div>
-          <h1>Gắn nhãn</h1>
-          <p>Review và gắn nhãn ảnh trước khi đưa vào dataset.</p>
+          <h1>{t('Gắn nhãn')}</h1>
+          <p>{t('Review và gắn nhãn ảnh trước khi đưa vào dataset.')}</p>
         </div>
         {eventScope && (
           <div className="event-scope">
-            <span>Đang review sự kiện</span>
+            <span>{t('Đang review sự kiện')}</span>
             <b>{eventScope}</b>
             <Button variant="ghost" size="sm" onClick={onClearScope}>
-              Xem tất cả ảnh
+              {t('Xem tất cả ảnh')}
             </Button>
           </div>
         )}
@@ -308,25 +312,25 @@ export function LabelingPage({
         <div>
           <Clock3 />
           <span>
-            Chờ review<b>{images.length - reviewedCount}</b>
+            {t('Chờ review')}<b>{images.length - reviewedCount}</b>
           </span>
         </div>
         <div>
           <CheckCircle2 />
           <span>
-            Đã review<b>{reviewedCount}</b>
+            {t('Đã review')}<b>{reviewedCount}</b>
           </span>
         </div>
         <div>
           <Check />
           <span>
-            Normal<b>{normalCount}</b>
+            {t('Bình thường')}<b>{normalCount}</b>
           </span>
         </div>
         <div>
           <AlertTriangle />
           <span>
-            Defect<b>{defectCount}</b>
+            {t('Lỗi')}<b>{defectCount}</b>
           </span>
         </div>
       </div>
@@ -334,27 +338,27 @@ export function LabelingPage({
         <label>
           <Search />
           <input
-            aria-label="Tìm ảnh cần review"
-            placeholder="Tìm ảnh, event hoặc camera…"
+            aria-label={t('Tìm ảnh cần review')}
+            placeholder={t('Tìm ảnh, event hoặc camera…')}
             value={query}
             onChange={(input) => setQuery(input.target.value)}
           />
         </label>
         <div className="label-filter">
           <button className={status === 'all' ? 'active' : ''} onClick={() => setStatus('all')}>
-            Tất cả
+            {t('Tất cả')}
           </button>
           <button
             className={status === 'pending' ? 'active' : ''}
             onClick={() => setStatus('pending')}
           >
-            Chờ review
+            {t('Chờ review')}
           </button>
           <button
             className={status === 'reviewed' ? 'active' : ''}
             onClick={() => setStatus('reviewed')}
           >
-            Đã review
+            {t('Đã review')}
           </button>
         </div>
         <span>{visibleImages.length} ảnh</span>
@@ -379,7 +383,7 @@ export function LabelingPage({
                       <ReviewBadge review={reviews[image.id]} />
                     </div>
                     <span>
-                      {camera.id} · {camera.position}
+                      {camera.id} · {t(camera.position)}
                     </span>
                     <small>
                       {event.stationId}
@@ -395,7 +399,7 @@ export function LabelingPage({
       ) : (
         <div className="panel empty-state">
           <CircleHelp className="mx-auto mb-3" />
-          Không có ảnh phù hợp với bộ lọc.
+          {t('Không có ảnh phù hợp với bộ lọc.')}
         </div>
       )}
       {selected && selectedEvent && selectedCamera && (
