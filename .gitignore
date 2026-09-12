@@ -2,3 +2,8 @@ node_modules/
 dist/
 *.tsbuildinfo
 .vite/
+__pycache__/
+*.py[cod]
+.env
+.venv/
+fabricVS-backend/data/
