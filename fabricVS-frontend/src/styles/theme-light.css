@@ -24,6 +24,7 @@
 }
 .theme-light .brand {
   color: var(--fv-text);
+  border-color: var(--fv-border);
 }
 .theme-light .brand div > span,
 .theme-light .breadcrumb,
