@@ -1,0 +1,19 @@
+[project]
+name = "fabric-vision-backend"
+version = "0.1.0"
+description = "Offline FastAPI backend for Fabric Vision USB camera collection."
+requires-python = ">=3.10,<3.14"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "opencv-python>=4.10,<5",
+  "pydantic-settings>=2.6,<3",
+  "uvicorn[standard]>=0.30,<1",
+]
+
+[dependency-groups]
+dev = [
+  "httpx>=0.28,<1",
+]
+
+[tool.uv]
+package = false
