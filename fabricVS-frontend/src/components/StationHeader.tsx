@@ -1,28 +1,28 @@
 import { Box, Layers3, UserRound, Cpu } from 'lucide-react'
 import type { Station } from '@/types'
+import { useLanguage } from '@/lib/i18n'
+
 export function StationHeader({ station }: { station: Station }) {
+  const { t } = useLanguage()
+
   return (
-    <div className="station-header">
-      <div className="station-title">
-        <h1>{station.name}</h1>
-      </div>
-      <p>Thu thập hình ảnh vải đồng bộ từ hệ thống camera đa điểm.</p>
+    <div className="station-header station-context" aria-label={t('Thông tin phiên làm việc')}>
       <div className="station-meta">
         <span>
           <Cpu />
-          Máy <b>{station.machine}</b>
+          {t('Máy sản xuất')} <b>{station.machine}</b>
         </span>
         <span>
           <Layers3 />
-          Vải <b>{station.fabric}</b>
+          {t('Loại vải')} <b>{station.fabric}</b>
         </span>
         <span>
           <Box />
-          Cuộn <b>{station.roll}</b>
+          {t('Mã cuộn')} <b>{station.roll}</b>
         </span>
         <span>
           <UserRound />
-          <b>{station.operator}</b>
+          {t('Người vận hành')} <b>{station.operator}</b>
         </span>
       </div>
     </div>

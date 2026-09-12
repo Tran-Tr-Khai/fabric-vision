@@ -1,27 +1,33 @@
 import { Camera as CameraIcon, VideoOff } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useLanguage } from '@/lib/i18n'
 import type { Camera } from '@/types'
 export function FabricPreview({
   camera,
   className,
-  imageUrl = '/fabric.svg',
+  imageUrl,
 }: {
   camera: Camera
   className?: string
   imageUrl?: string
 }) {
+  const { t } = useLanguage()
   return (
-    <div className={cn('fabric-preview', `fabric-${camera.previewVariant % 8}`, className)}>
-      <img
-        src={imageUrl}
-        alt={`Ảnh vải cotton — ${camera.name}, ${camera.position}`}
-        draggable={false}
-      />
+    <div className={cn('fabric-preview', camera.status === 'offline' && `fabric-${camera.previewVariant % 8}`, className)}>
+      {imageUrl ? (
+        <img
+          src={imageUrl}
+          alt={`${t('Ảnh vải cotton')} — ${camera.name}, ${t(camera.position)}`}
+          draggable={false}
+        />
+      ) : (
+        <span className="camera-no-image">{t('Chưa có ảnh chụp')}</span>
+      )}
       <div className="preview-vignette" />
       {camera.status === 'offline' && (
         <div className="offline-overlay">
           <VideoOff />
-          Camera ngoại tuyến
+          {t('Camera ngoại tuyến')}
         </div>
       )}
     </div>
@@ -30,12 +36,15 @@ export function FabricPreview({
 export function CameraCard({
   camera,
   flashing,
+  imageUrl,
   onOpen,
 }: {
   camera: Camera
   flashing: boolean
+  imageUrl?: string
   onOpen: () => void
 }) {
+  const { t } = useLanguage()
   return (
     <article className={cn('camera-card', flashing && 'is-capturing')}>
       <div className="camera-heading">
@@ -44,18 +53,18 @@ export function CameraCard({
         </button>
         <span className="camera-fps">{camera.fps} FPS</span>
       </div>
-      <button className="preview-button" onClick={onOpen} aria-label={`Xem ${camera.name}`}>
-        <FabricPreview camera={camera} />
+      <button className="preview-button" onClick={onOpen} aria-label={`${t('Xem ảnh')} ${camera.name}`}>
+        <FabricPreview camera={camera} imageUrl={imageUrl} />
         {flashing && (
           <span className="capture-flash">
             <CameraIcon size={28} />
-            <span>Đã chụp</span>
+            <span>{t('Đã chụp')}</span>
           </span>
         )}
       </button>
       <div className="camera-footer">
         <span>
-          {camera.id} · {camera.position}
+          {camera.id} · {t(camera.position)}
         </span>
       </div>
     </article>

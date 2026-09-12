@@ -1,6 +1,11 @@
 import { StartCaptureButton } from './CaptureControls'
+import { CaptureControls } from './CaptureControls'
 import type { Camera, CaptureSettings } from '@/types'
 import { useLanguage } from '@/lib/i18n'
+
+function intervalText(interval: number, t: (text: string) => string) {
+  return interval % 60 === 0 ? `${interval / 60} ${t('phút')}` : `${interval} ${t('giây')}`
+}
 export function StationInfo({
   cameras,
   settings,
@@ -11,6 +16,8 @@ export function StationInfo({
   onStart,
   onStop,
   onCamera,
+  onCapture,
+  onSettings,
 }: {
   cameras: Camera[]
   settings: CaptureSettings
@@ -21,10 +28,18 @@ export function StationInfo({
   onStart: () => void
   onStop: () => void
   onCamera: (camera: Camera) => void
+  onCapture: () => void
+  onSettings: () => void
 }) {
   const { t } = useLanguage()
   return (
     <aside className="station-panel">
+      <CaptureControls
+        collecting={collecting}
+        onCapture={onCapture}
+        onStop={onStop}
+        onSettings={onSettings}
+      />
       <section className="panel station-config">
         <div className="panel-title">
           <h2>{t('Điều khiển thu thập')}</h2>
@@ -64,11 +79,12 @@ export function StationInfo({
               disabled={collecting || mode === 'manual'}
               onChange={(event) => onInterval(Number(event.target.value))}
             >
-              <option value={10}>10 giây</option>
-              <option value={30}>30 giây</option>
-              <option value={60}>1 phút</option>
-              <option value={180}>3 phút</option>
-              <option value={300}>5 phút</option>
+              <option value={10}>10 {t('giây')}</option>
+              <option value={30}>30 {t('giây')}</option>
+              <option value={60}>1 {t('phút')}</option>
+              <option value={180}>3 {t('phút')}</option>
+              <option value={300}>5 {t('phút')}</option>
+              <option value={600}>10 {t('phút')}</option>
             </select>
           </label>
           {mode === 'automatic' ? (
@@ -76,7 +92,7 @@ export function StationInfo({
           ) : (
             <div className="manual-hint">{t('Dùng “Chụp toàn trạm” hoặc nút chụp trên từng camera.')}</div>
           )}
-          {collecting && <p className="capture-note">{t('Tự động chụp mỗi')} {settings.interval} giây</p>}
+          {collecting && <p className="capture-note">{t('Tự động chụp mỗi')} {intervalText(settings.interval, t)}</p>}
         </div>
       </section>
       <section className="panel camera-health">
@@ -91,7 +107,7 @@ export function StationInfo({
             <button key={camera.id} onClick={() => onCamera(camera)}>
               <span className={`status-dot ${camera.status}`} />
               <b>{camera.id}</b>
-              <span className="health-position">{camera.position}</span>
+              <span className="health-position">{t(camera.position)}</span>
             </button>
           ))}
         </div>

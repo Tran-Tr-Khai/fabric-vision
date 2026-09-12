@@ -3,8 +3,8 @@ import { CheckCircle2, X } from 'lucide-react'
 import { Sidebar } from '@/components/Sidebar'
 import { Header } from '@/components/Header'
 import { StationHeader } from '@/components/StationHeader'
-import { CaptureControls } from '@/components/CaptureControls'
 import { CameraGrid } from '@/components/CameraGrid'
+import { CameraSetup } from '@/components/CameraSetup'
 import { StationInfo } from '@/components/StationInfo'
 import { RecentCaptures } from '@/components/RecentCaptures'
 import { CameraDetail, EventDetail } from '@/components/CaptureDetails'
@@ -13,15 +13,16 @@ import { useCollection } from '@/hooks/useCollection'
 import { useLabeling } from '@/hooks/useLabeling'
 import { DatasetPage } from '@/pages/DatasetPage'
 import { SettingsPage } from '@/pages/SettingsPage'
-import { DashboardPage } from '@/pages/DashboardPage'
 import { LabelingPage } from '@/pages/LabelingPage'
 import type { Camera, CaptureEvent, Page } from '@/types'
 import { LanguageProvider, type Language } from '@/lib/i18n'
+import { api } from '@/lib/api'
 export default function App() {
   const collection = useCollection()
   const labeling = useLabeling()
   const [page, setPage] = useState<Page>('capture')
-  const [columns, setColumns] = useState(4)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [columns, setColumns] = useState(2)
   const [filter, setFilter] = useState('all')
   const [mode, setMode] = useState<'automatic' | 'manual'>('automatic')
   const [selectedCamera, setSelectedCamera] = useState<Camera | null>(null)
@@ -44,14 +45,16 @@ export default function App() {
     window.localStorage.setItem('fabric-vision-language', language)
     document.documentElement.lang = language
   }, [language])
-  const { station, settings, cameras, events, images, collecting, flashing, capture, start, stop } =
+  const { station, settings, cameras, events, images, collecting, flashing, capture, start, stop, error, loading } =
     collection
   return (
     <LanguageProvider language={language}>
-    <div className={`app-shell theme-${theme}`}>
+    <div className={`app-shell theme-${theme}${sidebarCollapsed ? ' sidebar-collapsed' : ''}`}>
       <Sidebar
         page={page}
         cameraCount={cameras.length}
+        collapsed={sidebarCollapsed}
+        onToggleCollapsed={() => setSidebarCollapsed((current) => !current)}
         onNavigate={(nextPage) => {
           if (nextPage === 'labeling') setLabelingEventId(null)
           setPage(nextPage)
@@ -66,26 +69,25 @@ export default function App() {
           language={language}
           onToggleLanguage={() => setLanguage((current) => (current === 'vi' ? 'en' : 'vi'))}
         />
-        <main className="main-content">
+        <main className={`main-content${page === 'capture' ? ' capture-page' : ''}`}>
           {page === 'capture' && (
             <>
-              <div className="page-top">
-                <StationHeader station={station} />
-                <CaptureControls
-                  collecting={collecting}
-                  onCapture={() => capture()}
-                  onStop={stop}
-                  onSettings={() => setPage('settings')}
-                />
-              </div>
-              <div className="capture-layout">
+              {loading && <div className="panel empty-state">Đang tải dữ liệu camera…</div>}
+              {!loading && error && <div className="panel empty-state">Không thể kết nối backend: {error}</div>}
+              {!loading && !error && !cameras.length && (
+                <CameraSetup machineId={station.id} cameras={cameras} onComplete={collection.reload} />
+              )}
+              {!loading && !error && cameras.length > 0 && (
+                <div className="capture-layout">
                 <div className="capture-workspace">
                   <CameraGrid
                     cameras={cameras}
+                    images={images}
                     flashing={flashing}
                     onOpen={setSelectedCamera}
                     columns={columns}
                     onColumns={setColumns}
+                    context={<StationHeader station={station} />}
                   />
                   <RecentCaptures
                     events={events}
@@ -102,14 +104,19 @@ export default function App() {
                   collecting={collecting}
                   mode={mode}
                   onMode={setMode}
-                  onInterval={(interval) =>
-                    collection.setSettings((previous) => ({ ...previous, interval }))
-                  }
+                  onInterval={(interval) => {
+                    void collection.saveSettings({ ...settings, interval }).catch((saveError) => {
+                      collection.setNotice(saveError instanceof Error ? saveError.message : 'Không thể lưu khoảng thời gian.')
+                    })
+                  }}
                   onStart={start}
                   onStop={stop}
                   onCamera={setSelectedCamera}
+                  onCapture={() => capture()}
+                  onSettings={() => setPage('settings')}
                 />
               </div>
+              )}
             </>
           )}
           {page === 'dataset' && (
@@ -127,9 +134,19 @@ export default function App() {
               settings={settings}
               station={station}
               collecting={collecting}
-              onSave={(nextSettings, nextStation) => {
-                collection.setSettings(nextSettings)
+              cameras={cameras}
+              onCameraConfigured={collection.reload}
+              onSave={async (nextSettings, nextStation) => {
+                await collection.saveSettings(nextSettings)
                 collection.setStation(nextStation)
+                await Promise.all(cameras.map((camera) => api(`/cameras/${camera.id}`, {
+                  method: 'PATCH',
+                  body: {
+                    resolution: nextSettings.resolution.replace(' × ', 'x'),
+                    fps: nextSettings.fps,
+                  },
+                })))
+                await collection.reload()
                 collection.setNotice('Đã lưu cấu hình cho các lần chụp tiếp theo.')
               }}
             />
@@ -148,15 +165,6 @@ export default function App() {
                   review.reviewed ? 'Đã lưu nhãn và đánh dấu ảnh đã review.' : 'Đã lưu nhãn ảnh.',
                 )
               }}
-            />
-          )}
-          {page === 'dashboard' && (
-            <DashboardPage
-              station={station}
-              cameraCount={cameras.length}
-              imageCount={images.length}
-              onCapture={() => setPage('capture')}
-              onDataset={() => setPage('dataset')}
             />
           )}
         </main>
@@ -190,12 +198,12 @@ export default function App() {
         <div className="p-6 text-sm leading-7 text-slate-300">
           <p className="flex items-center gap-2">
             <CheckCircle2 size={16} className="text-emerald-400" />
-            Tất cả {cameras.length} camera mô phỏng đã sẵn sàng.
+            {cameras.filter((camera) => camera.status === 'online').length}/{cameras.length} camera đang trực tuyến.
           </p>
           <p>
             {events.length} sự kiện · {images.length} ảnh ·{' '}
             {Object.values(labeling.reviews).filter((review) => review.reviewed).length} ảnh đã
-            review trong phiên. Dữ liệu được đặt lại khi tải lại trang.
+            review. Dữ liệu được lưu bởi backend local.
           </p>
         </div>
       </Dialog>
