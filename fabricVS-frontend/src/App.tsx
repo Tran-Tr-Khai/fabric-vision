@@ -49,7 +49,7 @@ export default function App() {
     collection
   return (
     <LanguageProvider language={language}>
-    <div className={`app-shell theme-${theme}${sidebarCollapsed ? ' sidebar-collapsed' : ''}`}>
+      <div className={`app-shell theme-${theme}${sidebarCollapsed ? ' sidebar-collapsed' : ''}`}>
       <Sidebar
         page={page}
         cameraCount={cameras.length}
@@ -62,7 +62,6 @@ export default function App() {
       />
       <div className="app-main">
         <Header
-          page={page}
           onNotifications={() => setInfo('notifications')}
           theme={theme}
           onToggleTheme={() => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))}
