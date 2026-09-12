@@ -53,6 +53,12 @@ async function createWindow() {
     minWidth: 1100,
     minHeight: 700,
     backgroundColor: '#1c2227',
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#273139',
+      symbolColor: '#f2dbc2',
+      height: 42,
+    },
     webPreferences: { contextIsolation: true, nodeIntegration: false },
   })
   await window.loadFile(path.join(__dirname, '..', 'dist', 'index.html'))

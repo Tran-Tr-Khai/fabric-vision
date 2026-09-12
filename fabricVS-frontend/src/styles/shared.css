@@ -2927,6 +2927,19 @@ h2,
   padding-inline: 20px;
 }
 
+/* Electron uses the web header as its title bar. Keep the native window
+   controls clear while allowing the remaining header surface to drag. */
+@media (display-mode: window-controls-overlay) {
+  .top-header {
+    padding-right: 160px;
+    -webkit-app-region: drag;
+  }
+  .top-header button,
+  .top-header .avatar {
+    -webkit-app-region: no-drag;
+  }
+}
+
 /* The compact Dashboard summary follows the same 20px working rhythm as its content blocks. */
 .station-context .station-meta > span:first-child {
   padding-left: 0;
