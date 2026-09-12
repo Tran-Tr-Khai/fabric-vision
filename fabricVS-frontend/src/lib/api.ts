@@ -3,6 +3,19 @@ const apiOrigin = `${backendOrigin}/api`
 
 type ApiOptions = Omit<RequestInit, 'body'> & { body?: unknown }
 
+function errorMessage(detail: unknown, status: number): string {
+  if (typeof detail === 'string') return detail
+  if (Array.isArray(detail)) {
+    return detail
+      .map((item) => {
+        if (item && typeof item === 'object' && 'msg' in item) return String(item.msg)
+        return String(item)
+      })
+      .join('; ')
+  }
+  return `Backend error (${status})`
+}
+
 export async function api<T>(path: string, options: ApiOptions = {}): Promise<T> {
   const response = await fetch(`${apiOrigin}${path}`, {
     ...options,
@@ -11,7 +24,7 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<T>
   })
   if (!response.ok) {
     const payload = await response.json().catch(() => null)
-    throw new Error(payload?.detail ?? `Backend error (${response.status})`)
+    throw new Error(errorMessage(payload?.detail, response.status))
   }
   return response.status === 204 ? (undefined as T) : response.json() as Promise<T>
 }

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog } = require('electron')
+const { app, BrowserWindow, dialog, Menu } = require('electron')
 const { spawn } = require('node:child_process')
 const path = require('node:path')
 
@@ -58,6 +58,9 @@ async function createWindow() {
   await window.loadFile(path.join(__dirname, '..', 'dist', 'index.html'))
 }
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+  Menu.setApplicationMenu(null)
+  return createWindow()
+})
 app.on('window-all-closed', () => app.quit())
 app.on('before-quit', () => backendProcess?.kill())

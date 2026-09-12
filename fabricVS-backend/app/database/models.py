@@ -86,6 +86,16 @@ CREATE TABLE IF NOT EXISTS image_reviews (
 def initialize_database() -> None:
     with get_connection() as connection:
         connection.executescript(SCHEMA)
+        # A fresh desktop installation needs one station before a USB camera can
+        # be attached.  Seed it only when there are no user-created stations.
+        has_machine = connection.execute("SELECT 1 FROM machines LIMIT 1").fetchone()
+        if has_machine is None:
+            connection.execute(
+                """INSERT INTO machines (id, name, machine_code, fabric, roll, operator)
+                   VALUES (?, ?, ?, '', '', '')""",
+                ("M001", "Máy kiểm tra 01", "M-001"),
+            )
+            connection.execute("INSERT INTO capture_settings (machine_id) VALUES (?)", ("M001",))
         # Collection threads are process-local, so a restarted desktop app begins
         # in a truthful ready state instead of showing a stale "collecting" flag.
         connection.execute("UPDATE machines SET status = 'ready' WHERE status = 'collecting'")
