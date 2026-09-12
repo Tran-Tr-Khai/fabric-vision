@@ -34,3 +34,17 @@ npm run dev
 
 Mở URL Vite in ra trong terminal ở `http://127.0.0.1:5173`.
 
+## Đóng gói ứng dụng Windows
+
+Yêu cầu máy đóng gói đã có Node.js/npm và `uv`. Chạy lệnh sau từ thư mục frontend:
+
+```powershell
+cd fabricVS-frontend
+npm run dist:win
+```
+
+Lệnh sẽ build giao diện React, đóng gói FastAPI thành file chạy độc lập, rồi tạo bộ cài Windows tại:
+
+`release/FabricVision-Setup-<version>.exe`
+
+Dữ liệu vận hành (SQLite và ảnh chụp) của bản đã cài được lưu trong thư mục dữ liệu người dùng Windows, vì vậy không cần quyền ghi vào thư mục cài đặt.
